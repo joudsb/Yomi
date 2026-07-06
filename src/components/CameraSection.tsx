@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   wrap: { paddingHorizontal: 12 },
   frame: {
     width: '100%',
-    aspectRatio: 1 / 1.15, // slightly taller than square
+    aspectRatio: 1 / 1.02, // near-square (trimmed so friends row clears bottom nav)
     borderRadius: 24,
     backgroundColor: '#d9d9d9',
     borderWidth: 1,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    paddingVertical: 10,
+    paddingVertical: 6,
   },
   sideBtn: { padding: 10 },
   shutter: {
