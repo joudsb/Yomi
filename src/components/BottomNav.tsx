@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
+import { brand, useTheme } from '../theme';
 
 export type TabKey = 'memories' | 'tasks' | 'home' | 'friends' | 'challenges';
 
@@ -12,36 +14,60 @@ const TABS: { key: TabKey; icon: keyof typeof Feather.glyphMap; label: string }[
   { key: 'challenges', icon: 'award', label: 'Challenges' },
 ];
 
+/**
+ * Floating glass pill — detached from the base, fully rounded ("welcoming").
+ * Circular icon buttons; active tab sits on a brand-yellow circle.
+ */
 export default function BottomNav({ active, onChange }: { active: TabKey; onChange: (t: TabKey) => void }) {
+  const t = useTheme();
   return (
-    <View style={styles.bar}>
-      {TABS.map((t) => {
-        const isActive = t.key === active;
-        return (
-          <Pressable key={t.key} style={styles.item} onPress={() => onChange(t.key)} accessibilityLabel={t.label}>
-            <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
-              <Feather name={t.icon} size={22} color={isActive ? '#111' : '#999'} />
-            </View>
-            <Text style={[styles.label, isActive && styles.labelActive]}>{t.label}</Text>
-          </Pressable>
-        );
-      })}
+    <View style={styles.host} pointerEvents="box-none">
+      <BlurView
+        intensity={40}
+        tint={t.dark ? 'dark' : 'light'}
+        style={[styles.pill, { backgroundColor: t.glass, borderColor: t.glassBorder }]}
+      >
+        {TABS.map((tab) => {
+          const isActive = tab.key === active;
+          return (
+            <Pressable
+              key={tab.key}
+              style={[styles.item, isActive && { backgroundColor: brand.yellow }]}
+              onPress={() => onChange(tab.key)}
+              accessibilityLabel={tab.label}
+            >
+              <Feather name={tab.icon} size={22} color={isActive ? t.onYellow : t.iconMuted} />
+            </Pressable>
+          );
+        })}
+      </BlurView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    backgroundColor: '#fff',
-    paddingTop: 6,
-    paddingBottom: 4,
+  host: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 18,
+    alignItems: 'center',
   },
-  item: { flex: 1, alignItems: 'center', gap: 2 },
-  iconWrap: { padding: 4, borderRadius: 10 },
-  iconWrapActive: { backgroundColor: '#eee' },
-  label: { fontSize: 10, color: '#999' },
-  labelActive: { color: '#111', fontWeight: '600' },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  item: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

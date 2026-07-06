@@ -5,14 +5,16 @@ import { StyleSheet, View } from 'react-native';
 import BottomNav, { TabKey } from './src/components/BottomNav';
 import HomeScreen from './src/screens/HomeScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
+import { useTheme } from './src/theme';
 
 export default function App() {
   const [tab, setTab] = useState<TabKey>('home');
+  const t = useTheme();
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <StatusBar style="dark" />
+      <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]} edges={['top']}>
+        <StatusBar style={t.dark ? 'light' : 'dark'} />
         <View style={styles.content}>
           {tab === 'home' && <HomeScreen onOpenFriends={() => setTab('friends')} />}
           {tab === 'memories' && <PlaceholderScreen title="Memories" subtitle="Albums, calendar view of past posts & memories" />}
@@ -27,6 +29,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#ffffff' },
+  safe: { flex: 1 },
   content: { flex: 1 },
 });

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { brand, useTheme } from '../theme';
 
 export type TaskSize = 'small' | 'big' | 'event';
 
@@ -15,32 +16,39 @@ export interface YomiTask {
 const COLLAPSED_COUNT = 3;
 
 /**
- * Google-Calendar-style stacked task rows.
- * small task = thin row, big task / event = tall row.
- * (Colors per type come later — grayscale for now.)
- * Overflow: chevron expands to show all tasks.
+ * Google-Calendar-style stacked task rows on neutral surfaces.
+ * Blue = interactive (expand control). Completed rows recede.
  */
 export default function TaskStrip({ tasks }: { tasks: YomiTask[] }) {
+  const t = useTheme();
   const [expanded, setExpanded] = useState(false);
   const visible = expanded ? tasks : tasks.slice(0, COLLAPSED_COUNT);
   const hasOverflow = tasks.length > COLLAPSED_COUNT;
 
   return (
     <View style={styles.wrap}>
-      {visible.map((t) => (
+      {visible.map((task) => (
         <Pressable
-          key={t.id}
-          style={[styles.row, t.size === 'small' ? styles.rowSmall : styles.rowBig, t.done && styles.rowDone]}
+          key={task.id}
+          style={[
+            styles.row,
+            task.size === 'small' ? styles.rowSmall : styles.rowBig,
+            { backgroundColor: t.surface, borderColor: t.surfaceBorder },
+            task.done && { opacity: 0.55 },
+          ]}
         >
-          <Text style={[styles.title, t.done && styles.titleDone]} numberOfLines={1}>
-            {t.title}
+          <Text
+            style={[styles.title, { color: t.text }, task.done && { color: t.textMuted, textDecorationLine: 'line-through' }]}
+            numberOfLines={1}
+          >
+            {task.title}
           </Text>
-          {t.time && <Text style={styles.time}>{t.time}</Text>}
+          {task.time && <Text style={[styles.time, { color: t.textMuted }]}>{task.time}</Text>}
         </Pressable>
       ))}
       {hasOverflow && (
         <Pressable style={styles.chevron} onPress={() => setExpanded((e) => !e)} accessibilityLabel={expanded ? 'Show fewer tasks' : 'Show all tasks'}>
-          <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={20} color="#666" />
+          <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={20} color={brand.blue} />
         </Pressable>
       )}
     </View>
@@ -51,9 +59,7 @@ const styles = StyleSheet.create({
   wrap: { paddingHorizontal: 12, gap: 4 },
   row: {
     borderWidth: 1,
-    borderColor: '#bbb',
-    backgroundColor: '#f2f2f2',
-    borderRadius: 6,
+    borderRadius: 8,
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -61,9 +67,7 @@ const styles = StyleSheet.create({
   },
   rowSmall: { height: 26 },
   rowBig: { height: 42 },
-  rowDone: { backgroundColor: '#ddd', borderColor: '#ccc' },
-  title: { fontSize: 13, color: '#111', flex: 1 },
-  titleDone: { color: '#888', textDecorationLine: 'line-through' },
-  time: { fontSize: 11, color: '#777', marginLeft: 8 },
+  title: { fontSize: 13, flex: 1 },
+  time: { fontSize: 11, marginLeft: 8 },
   chevron: { alignItems: 'center', paddingVertical: 2 },
 });

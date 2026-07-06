@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import TopBar from '../components/TopBar';
 import TaskStrip, { YomiTask } from '../components/TaskStrip';
 import CameraSection from '../components/CameraSection';
+import { useTheme } from '../theme';
 import FriendsPostsRow, { FriendPreview } from '../components/FriendsPostsRow';
 
 // Mock data — replaced by Firebase later
@@ -31,8 +32,9 @@ function todayLabel() {
  * Top → bottom: top bar, task strip, camera, capture buttons, friends' new posts.
  */
 export default function HomeScreen({ onOpenFriends }: { onOpenFriends: () => void }) {
+  const t = useTheme();
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[styles.screen, { backgroundColor: t.bg }]} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <TopBar score={254} dateLabel={todayLabel()} />
       <TaskStrip tasks={MOCK_TASKS} />
       <View style={styles.spacer} />
@@ -43,7 +45,7 @@ export default function HomeScreen({ onOpenFriends }: { onOpenFriends: () => voi
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#fff' },
-  content: { paddingBottom: 8 },
+  screen: { flex: 1 },
+  content: { paddingBottom: 110 },
   spacer: { height: 10 },
 });

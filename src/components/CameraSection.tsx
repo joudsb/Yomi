@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform, GestureResponderEvent } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { brand, useTheme } from '../theme';
 
 const MAX_VIDEO_SECONDS = 60;
 const PRESETS_HIDE_MS = 3000;
@@ -21,6 +22,7 @@ const ZOOM_PRESETS: { label: string; zoom: number }[] = [
  * Double-tap flips. Below: upload | shutter (tap = photo, hold = video ≤60s) | flip.
  */
 export default function CameraSection() {
+  const t = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<'front' | 'back'>('back');
   const [flash, setFlash] = useState(false);
@@ -106,7 +108,7 @@ export default function CameraSection() {
     <View style={styles.wrap}>
       {/* Camera frame */}
       <Pressable
-        style={styles.frame}
+        style={[styles.frame, { backgroundColor: t.surface, borderColor: t.surfaceBorder }]}
         onPress={onFrameTap}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -122,8 +124,8 @@ export default function CameraSection() {
           />
         ) : (
           <Pressable style={styles.permission} onPress={requestPermission}>
-            <Feather name="camera" size={36} color="#999" />
-            <Text style={styles.permissionText}>Tap to enable camera</Text>
+            <Feather name="camera" size={36} color={t.iconMuted} />
+            <Text style={[styles.permissionText, { color: t.textMuted }]}>Tap to enable camera</Text>
           </Pressable>
         )}
 
@@ -173,22 +175,22 @@ export default function CameraSection() {
       {/* Capture row: upload | shutter | flip */}
       <View style={styles.captureRow}>
         <Pressable style={styles.sideBtn} accessibilityLabel="Upload image or clip (trim to 60s max)">
-          <Feather name="upload" size={24} color="#333" />
+          <Feather name="upload" size={24} color={t.icon} />
         </Pressable>
 
         <Pressable
-          style={[styles.shutter, recording && styles.shutterRecording]}
+          style={[styles.shutter, { borderColor: t.shutterRing }, recording && { borderColor: brand.yellow }]}
           onPress={takePhoto}
           onLongPress={startVideo}
           onPressOut={recording ? stopVideo : undefined}
           delayLongPress={250}
           accessibilityLabel="Tap for photo, hold for video"
         >
-          <View style={styles.shutterInner} />
+          <View style={[styles.shutterInner, { backgroundColor: t.surface }]} />
         </Pressable>
 
         <Pressable style={styles.sideBtn} onPress={flip} accessibilityLabel="Flip camera">
-          <Feather name="refresh-cw" size={24} color="#333" />
+          <Feather name="refresh-cw" size={24} color={t.icon} />
         </Pressable>
       </View>
     </View>
@@ -201,13 +203,11 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1 / 1.02, // near-square (trimmed so friends row clears bottom nav)
     borderRadius: 32,
-    backgroundColor: '#d9d9d9',
     borderWidth: 1,
-    borderColor: '#bbb',
     overflow: 'hidden',
   },
   permission: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 },
-  permissionText: { color: '#999', fontSize: 13 },
+  permissionText: { fontSize: 13 },
   sideControls: {
     position: 'absolute',
     right: 10,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  recDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff' },
+  recDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFD500' },
   recText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   captureRow: {
     flexDirection: 'row',
@@ -270,10 +270,8 @@ const styles = StyleSheet.create({
     height: 68,
     borderRadius: 34,
     borderWidth: 4,
-    borderColor: '#333',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  shutterRecording: { borderColor: '#000' },
-  shutterInner: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#e6e6e6' },
+  shutterInner: { width: 52, height: 52, borderRadius: 26 },
 });
