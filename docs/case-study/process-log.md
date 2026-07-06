@@ -9,3 +9,5 @@ Narrative record of the build: phases, challenges, iterations, learnings. Raw ma
 Chose React Native + Expo (one codebase → iOS + Android, responsive via flexbox) with Firebase planned for auth/storage/feeds. Notable constraint discovered: the OneDrive-synced project folder can't host a git repo (lock files), so the repo lives in the build sandbox and syncs both ways.
 
 Built v001: the Quick Access home page in grayscale, direct from Joud's annotated wireframe. Everything functional-first: camera permissions flow, tap-vs-hold shutter (60s video cap), double-tap to flip, expandable task strip. Verified layout on a 390×844 viewport (iPhone-class) via web preview screenshot.
+
+**2026-07-06 (cont.):** Recreated the v002 home screen in Figma (page "Wireframe to High Fidelity") as a fully-editable auto-layout frame — bridging code back to design so high-fidelity exploration (color, type) can happen in Figma before being implemented in code.
