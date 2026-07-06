@@ -3,36 +3,35 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 /**
- * Top bar — layout not final (per wireframe notes).
- * Must include: friends chat, friends (view all / invite), date, yomiscore (streak).
+ * Top bar: account + score (left) · date (true center) · bell + chat (far right).
  */
 export default function TopBar({ score, dateLabel }: { score: number; dateLabel: string }) {
   return (
     <View style={styles.bar}>
-      {/* Account */}
+      {/* Date pill — absolutely centered so side content can't push it off-center */}
+      <View style={styles.dateWrap} pointerEvents="none">
+        <View style={styles.datePill}>
+          <Text style={styles.dateText}>{dateLabel}</Text>
+        </View>
+      </View>
+
+      {/* Left: account + yomiscore */}
       <Pressable style={styles.avatar} accessibilityLabel="Account">
         <Feather name="user" size={16} color="#666" />
       </Pressable>
-
-      {/* Friends: view all + invite */}
-      <Pressable style={styles.iconBtn} accessibilityLabel="Friends / add friends">
-        <Feather name="user-plus" size={18} color="#333" />
-      </Pressable>
-
-      {/* Friends chat */}
-      <Pressable style={styles.iconBtn} accessibilityLabel="Friends chat">
-        <Feather name="message-circle" size={18} color="#333" />
-      </Pressable>
-
-      {/* Date pill (center) */}
-      <View style={styles.datePill}>
-        <Text style={styles.dateText}>{dateLabel}</Text>
-      </View>
-
-      {/* YomiScore */}
       <Pressable style={styles.score} accessibilityLabel="YomiScore">
         <Text style={styles.scoreText}>{score}</Text>
         <Feather name="star" size={14} color="#333" />
+      </Pressable>
+
+      <View style={styles.flex} />
+
+      {/* Right: notifications, then chat at the far edge */}
+      <Pressable style={styles.iconBtn} accessibilityLabel="Notifications">
+        <Feather name="bell" size={20} color="#333" />
+      </Pressable>
+      <Pressable style={styles.iconBtn} accessibilityLabel="Friends chat">
+        <Feather name="message-circle" size={20} color="#333" />
       </Pressable>
     </View>
   );
@@ -46,6 +45,19 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     gap: 8,
   },
+  dateWrap: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  datePill: {
+    borderWidth: 1.5,
+    borderColor: '#333',
+    borderRadius: 999,
+    paddingVertical: 5,
+    paddingHorizontal: 18,
+  },
+  dateText: { fontSize: 13, fontWeight: '600', color: '#111' },
   avatar: {
     width: 32,
     height: 32,
@@ -55,17 +67,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconBtn: { padding: 4 },
-  datePill: {
-    flex: 1,
-    borderWidth: 1.5,
-    borderColor: '#333',
-    borderRadius: 999,
-    paddingVertical: 5,
-    alignItems: 'center',
-    marginHorizontal: 4,
-  },
-  dateText: { fontSize: 13, fontWeight: '600', color: '#111' },
   score: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   scoreText: { fontSize: 15, fontWeight: '700', color: '#111' },
+  flex: { flex: 1 },
+  iconBtn: { padding: 4 },
 });

@@ -1,15 +1,24 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform, GestureResponderEvent } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 const MAX_VIDEO_SECONDS = 60;
+const PRESETS_HIDE_MS = 3000;
+
+// Zoom presets. CameraView zoom is normalized 0..1.
+// TODO: true 0.5x needs ultra-wide lens selection (not exposed by expo-camera yet).
+const ZOOM_PRESETS: { label: string; zoom: number }[] = [
+  { label: '.5', zoom: 0 },
+  { label: '1×', zoom: 0.05 },
+  { label: '2', zoom: 0.25 },
+  { label: '5', zoom: 0.6 },
+];
 
 /**
- * Near-square camera frame (slightly taller than wide, like the wireframe —
- * a bit longer than Locket's). In-frame side controls: flash, HD, dual cam, filters.
- * Below: upload | shutter (tap = photo, hold = video ≤60s) | flip.
- * Double-tap on the frame also flips the camera.
+ * Near-square camera frame. Side controls: flash, HD, dual cam, filters.
+ * Pinch (two fingers) to zoom freely — preset buttons (.5 / 1× / 2 / 5) appear while zooming.
+ * Double-tap flips. Below: upload | shutter (tap = photo, hold = video ≤60s) | flip.
  */
 export default function CameraSection() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -18,12 +27,54 @@ export default function CameraSection() {
   const [hd, setHd] = useState(true);
   const [dual, setDual] = useState(false); // dual capture: planned feature
   const [recording, setRecording] = useState(false);
+  const [zoom, setZoom] = useState(0.05);
+  const [showPresets, setShowPresets] = useState(false);
+
   const lastTap = useRef(0);
+  const pinchDist = useRef(0);
+  const zoomRef = useRef(0.05);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cameraRef = useRef<CameraView>(null);
 
   const flip = () => setFacing((f) => (f === 'back' ? 'front' : 'back'));
 
-  const onFramePress = () => {
+  const revealPresets = () => {
+    setShowPresets(true);
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setShowPresets(false), PRESETS_HIDE_MS);
+  };
+
+  const applyZoom = (z: number) => {
+    const clamped = Math.min(1, Math.max(0, z));
+    zoomRef.current = clamped;
+    setZoom(clamped);
+  };
+
+  const touchDistance = (e: GestureResponderEvent) => {
+    const [a, b] = e.nativeEvent.touches;
+    return Math.hypot(a.pageX - b.pageX, a.pageY - b.pageY);
+  };
+
+  const onTouchMove = (e: GestureResponderEvent) => {
+    if (e.nativeEvent.touches.length === 2) {
+      const d = touchDistance(e);
+      if (pinchDist.current === 0) {
+        pinchDist.current = d;
+        revealPresets();
+        return;
+      }
+      const delta = (d - pinchDist.current) / 250; // pinch sensitivity
+      pinchDist.current = d;
+      applyZoom(zoomRef.current + delta);
+      revealPresets();
+    }
+  };
+
+  const onTouchEnd = (e: GestureResponderEvent) => {
+    if (e.nativeEvent.touches.length < 2) pinchDist.current = 0;
+  };
+
+  const onFrameTap = () => {
     const now = Date.now();
     if (now - lastTap.current < 300) flip(); // double-tap flips
     lastTap.current = now;
@@ -54,13 +105,19 @@ export default function CameraSection() {
   return (
     <View style={styles.wrap}>
       {/* Camera frame */}
-      <Pressable style={styles.frame} onPress={onFramePress}>
+      <Pressable
+        style={styles.frame}
+        onPress={onFrameTap}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         {canUseCamera ? (
           <CameraView
             ref={cameraRef}
             style={StyleSheet.absoluteFill}
             facing={facing}
             enableTorch={flash}
+            zoom={zoom}
             mode="video"
           />
         ) : (
@@ -85,6 +142,25 @@ export default function CameraSection() {
             <Feather name="sliders" size={18} color="#fff" />
           </Pressable>
         </View>
+
+        {/* Zoom presets — appear while pinching */}
+        {showPresets && (
+          <View style={styles.presetRow}>
+            {ZOOM_PRESETS.map((p) => (
+              <Pressable
+                key={p.label}
+                style={[styles.presetBtn, Math.abs(zoom - p.zoom) < 0.03 && styles.presetBtnActive]}
+                onPress={() => {
+                  applyZoom(p.zoom);
+                  revealPresets();
+                }}
+                accessibilityLabel={`Zoom ${p.label}`}
+              >
+                <Text style={styles.presetText}>{p.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
 
         {recording && (
           <View style={styles.recBadge}>
@@ -148,6 +224,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctrlActive: { backgroundColor: 'rgba(0,0,0,0.7)' },
+  presetRow: {
+    position: 'absolute',
+    bottom: 12,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    borderRadius: 999,
+    padding: 4,
+  },
+  presetBtn: {
+    minWidth: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+  },
+  presetBtnActive: { backgroundColor: 'rgba(255,255,255,0.3)' },
+  presetText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   recBadge: {
     position: 'absolute',
     top: 14,

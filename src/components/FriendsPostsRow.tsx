@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 export interface FriendPreview {
@@ -8,53 +8,50 @@ export interface FriendPreview {
   hasNewPost: boolean;
 }
 
+const MAX_SHOWN = 4;
+
 /**
- * Row of friends' profile pictures who have new posts.
- * Pressing takes the user to the Friends page (all friends' posts).
+ * Compact, button-like pill of overlapping friend avatars (friends with new posts).
+ * No names. Centered. Pressing opens the Friends page.
  */
 export default function FriendsPostsRow({ friends, onPress }: { friends: FriendPreview[]; onPress: () => void }) {
-  const withPosts = friends.filter((f) => f.hasNewPost);
+  const withPosts = friends.filter((f) => f.hasNewPost).slice(0, MAX_SHOWN);
   return (
-    <Pressable style={styles.wrap} onPress={onPress} accessibilityLabel="See friends' latest posts">
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.list}>
-        {withPosts.map((f) => (
-          <View key={f.id} style={styles.friend}>
-            <View style={styles.avatarRing}>
-              <View style={styles.avatar}>
-                <Feather name="user" size={18} color="#777" />
-              </View>
-            </View>
-            <Text style={styles.name} numberOfLines={1}>
-              {f.name}
-            </Text>
+    <View style={styles.wrap}>
+      <Pressable style={styles.pill} onPress={onPress} accessibilityLabel="See friends' latest posts">
+        {withPosts.map((f, i) => (
+          <View key={f.id} style={[styles.avatar, i > 0 && styles.overlap]}>
+            <Feather name="user" size={16} color="#777" />
           </View>
         ))}
-        <View style={styles.more}>
-          <Feather name="chevron-right" size={18} color="#888" />
-        </View>
-      </ScrollView>
-    </Pressable>
+        <Feather name="chevron-right" size={18} color="#666" style={styles.chevron} />
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { paddingVertical: 4 },
-  list: { paddingHorizontal: 16, alignItems: 'center', gap: 14 },
-  friend: { alignItems: 'center', width: 52 },
-  avatarRing: {
-    padding: 2,
-    borderRadius: 26,
-    borderWidth: 2,
-    borderColor: '#555', // "new post" indicator ring
+  wrap: { alignItems: 'center', paddingVertical: 4 },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#bbb',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 999,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#e3e3e3',
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#e0e0e0',
+    borderWidth: 2,
+    borderColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  name: { fontSize: 10, color: '#555', marginTop: 3 },
-  more: { justifyContent: 'center' },
+  overlap: { marginLeft: -12 },
+  chevron: { marginLeft: 4 },
 });
