@@ -38,3 +38,15 @@ Every entry: **Context → Options considered → Decision → Rationale**. Scre
 - Friends' new posts: compressed from a labeled avatar row into a compact pill of overlapping avatars, centered, names removed — reads as a single button and reduces visual competition with the shutter.
 
 **Screenshot:** `versions/v002-home-refinements/screenshot-home.png`
+
+## 2026-07-06 — Brand colors & visual language (v003)
+
+**Context:** Color research complete (see color-research.md). Audience spans teenagers to adults, and this generation favors simple, neutral UIs where brand color appears only in key components.
+
+**Decision:** Two brand colors — **Yellow #FFD500** (signature: energy, capture, celebration — the Snapchat "own a color" lesson) and **Electric Blue #0A00FF** (interactive accents: trust + digital boldness). White/black neutral bases with full light/dark mode support.
+
+**Application rule:** neutrals carry ~95% of the UI; yellow marks *the* action (active nav tab, YomiScore star, recording state); blue marks *tappable/interactive* (expand chevrons, links). Brand shows in components, never in backgrounds.
+
+**Bottom nav:** redesigned from a base-anchored bar to a floating glass pill (blur + translucency), fully circular buttons — "welcoming, not stuck to the base." Feels lighter and more modern for younger users while staying legible for adults.
+
+**Screenshots:** `versions/v003-brand-colors/screenshot-light.png`, `screenshot-dark.png`
