@@ -27,3 +27,14 @@ Every entry: **Context → Options considered → Decision → Rationale**. Scre
 **Also decided:** custom state-based tab bar instead of a navigation library for now (fewer dependencies while the IA is still fluid); grayscale only — color system deferred deliberately so structure gets critiqued before aesthetics.
 
 **Screenshot:** `versions/v001-quick-access/screenshot-home.png`
+
+## 2026-07-06 — Home iteration v002
+
+**Context:** First hands-on test on a real device (Expo Go) surfaced layout and interaction gaps.
+
+**Decisions:**
+- Top bar rebalanced: date pill absolutely centered (side icons can't push it off-axis); notifications bell introduced left of chat, chat anchored far right; add-friends removed from the bar (friend management lives in the Friends tab).
+- Camera zoom: two-finger pinch for free zoom, with preset buttons (.5 / 1× / 2 / 5) that fade in while zooming and auto-hide after 3s — borrows the familiar iOS camera pattern so zoom control is discoverable but never permanently cluttering the viewfinder.
+- Friends' new posts: compressed from a labeled avatar row into a compact pill of overlapping avatars, centered, names removed — reads as a single button and reduces visual competition with the shutter.
+
+**Screenshot:** `versions/v002-home-refinements/screenshot-home.png`
