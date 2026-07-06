@@ -196,11 +196,11 @@ export default function CameraSection() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 12 },
+  wrap: { paddingHorizontal: 0 },
   frame: {
     width: '100%',
     aspectRatio: 1 / 1.02, // near-square (trimmed so friends row clears bottom nav)
-    borderRadius: 24,
+    borderRadius: 32,
     backgroundColor: '#d9d9d9',
     borderWidth: 1,
     borderColor: '#bbb',
