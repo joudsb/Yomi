@@ -1,0 +1,4 @@
+v001 — Quick Access home screen (2026-07-05)
+Commit: b404340
+Grayscale structure/layout of the main home page.
+Restore: copy code/ contents back to project root, or `git checkout b404340`.

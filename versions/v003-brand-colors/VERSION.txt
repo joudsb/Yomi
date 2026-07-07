@@ -1,0 +1,3 @@
+v003 — Brand colors + glass nav (2026-07-06)
+Yellow #FFD500 + Blue #0A00FF, light/dark themes, floating glass bottom nav.
+Restore: copy code/ contents to project root.

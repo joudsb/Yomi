@@ -1,0 +1,6 @@
+v004 — Figma "Friends Align A" full-width bar (2026-07-07)
+Two-row header (avatar + "Joudi's Yomi" / big date + YomiScore).
+Camera: yellow glow, collapsible ⋯ settings (flash/HD/dual/filters), pinch + preset zoom.
+Tasks: single card, tap-to-complete rows, "N more" expand/collapse.
+Restore: copy code/ contents to project root.
+Screenshots: pending device capture (run on Expo Go).
